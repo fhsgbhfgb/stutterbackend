@@ -9,8 +9,6 @@ import inflect
 import base64
 from src.utils.audio_utils import load_audio, normalize_audio, apply_noise_reduction
 from src.audio.transcription_analyzer import TranscriptionAnalyzer, TranscriptionResult
-from src.audio.feature_extractor import FeatureExtractor
-from src.audio.stutter_detector import StutterDetector, StutterType, StutterEvent
 from src.visualization.speech_visualizer import SpeechVisualizer
 import json
 
@@ -37,10 +35,8 @@ class SpeechAnalyzer:
         try:
             self.language = language
             self.transcriber = TranscriptionAnalyzer(model_size="medium", language=language)
-            self.feature_extractor = FeatureExtractor()
-            self.stutter_detector = StutterDetector()
             self.visualizer = SpeechVisualizer()
-            logger.info(f"Speech Analyzer (Signal-processing) initialized successfully for language: {language}")
+            logger.info(f"Speech Analyzer (Transcription-based) initialized successfully for language: {language}")
         except Exception as e:
             logger.error(f"Error initializing Speech Analyzer: {e}")
             raise
@@ -65,12 +61,6 @@ class SpeechAnalyzer:
                 audio_data, sample_rate, transcripts_dir
             )
 
-            logger.info("Extracting signal features and detecting stutters...")
-            features = self.feature_extractor.extract_features(audio_data)
-            signal_stutter_events = self.stutter_detector.analyze_speech(
-                features, audio_data, sample_rate
-            )
-
             logger.info("Comparing with reference passage...")
             passage_comparison = self._compare_with_reference(result.text, language=language)
 
@@ -93,7 +83,7 @@ class SpeechAnalyzer:
                     logger.warning(f"Could not read visualization: {e}")
 
             # Format combined stutter events
-            stutter_events = self._format_stutter_events(result, signal_stutter_events)
+            stutter_events = self._format_stutter_events(result)
 
             # Build the full results dictionary
             full_results = {
@@ -401,7 +391,7 @@ class SpeechAnalyzer:
         except Exception:
             return 50, "Moderate"
 
-    def _format_stutter_events(self, result, signal_events: list = None) -> list:
+    def _format_stutter_events(self, result) -> list:
         formatted_events = []
         for rep in result.repetitions:
             formatted_events.append({
@@ -418,20 +408,5 @@ class SpeechAnalyzer:
                 "duration": filler.get("end", 0) - filler.get("start", 0),
                 "text": filler.get("word", ""), "confidence": filler.get("confidence", 0.0),
             })
-        if signal_events:
-            for event in signal_events:
-                is_duplicate = False
-                for existing in formatted_events:
-                    if abs(existing["start"] - event.start_time) < 0.2 and existing["type"] == event.stutter_type.value:
-                        is_duplicate = True
-                        existing["confidence"] = max(existing["confidence"], event.confidence)
-                        break
-                if not is_duplicate:
-                    formatted_events.append({
-                        "type": event.stutter_type.value, "subtype": "signal_detected",
-                        "start": event.start_time, "end": event.end_time,
-                        "duration": event.duration(), "text": event.text,
-                        "confidence": event.confidence, "severity": event.severity
-                    })
         formatted_events.sort(key=lambda x: x["start"])
         return formatted_events

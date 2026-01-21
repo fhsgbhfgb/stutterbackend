@@ -1,0 +1,1046 @@
+{
+  "transcription": "नमस्ते नमस्ते दुनिया",
+  "stutter_events": [
+    {
+      "type": "repetition",
+      "subtype": "simple",
+      "start": 0,
+      "end": 2,
+      "duration": 2,
+      "text": "नमस्ते",
+      "count": 2,
+      "confidence": 0.9825598084647404
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 0.2,
+      "end": 0.6,
+      "duration": 0.39999999999999997,
+      "text": "block",
+      "confidence": 0.957538869857788,
+      "severity": 0.7660310958862303
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 0.3,
+      "end": 1.5,
+      "duration": 1.2,
+      "text": "repetition",
+      "confidence": 0.9797036469576318,
+      "severity": 0.9797036469576318
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 1.0,
+      "end": 1.4000000000000001,
+      "duration": 0.40000000000000013,
+      "text": "block",
+      "confidence": 0.9663308396339416,
+      "severity": 0.7730646717071535
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 1.05,
+      "end": 2.1,
+      "duration": 1.05,
+      "text": "repetition",
+      "confidence": 0.974011449171189,
+      "severity": 0.974011449171189
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 1.6,
+      "end": 2.0,
+      "duration": 0.3999999999999999,
+      "text": "block",
+      "confidence": 0.9005302720069885,
+      "severity": 0.5994029644012451
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 1.6500000000000001,
+      "end": 2.4,
+      "duration": 0.7499999999999998,
+      "text": "repetition",
+      "confidence": 0.9702986063537072,
+      "severity": 0.9702986063537072
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 1.95,
+      "end": 2.5500000000000003,
+      "duration": 0.6000000000000003,
+      "text": "repetition",
+      "confidence": 0.8823176969801491,
+      "severity": 0.8823176969801491
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 2.0,
+      "end": 2.4,
+      "duration": 0.3999999999999999,
+      "text": "block",
+      "confidence": 0.827519823551178,
+      "severity": 0.6620158588409423
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 2.2,
+      "end": 2.6,
+      "duration": 0.3999999999999999,
+      "text": "block",
+      "confidence": 0.2996779308319092,
+      "severity": 0.2397423446655273
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 2.25,
+      "end": 4.8,
+      "duration": 2.55,
+      "text": "repetition",
+      "confidence": 0.9626738440831708,
+      "severity": 0.9626738440831708
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 4.2,
+      "end": 4.6000000000000005,
+      "duration": 0.40000000000000036,
+      "text": "block",
+      "confidence": 0.6742517943382264,
+      "severity": 0.5394014354705816
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 4.3500000000000005,
+      "end": 4.95,
+      "duration": 0.5999999999999996,
+      "text": "repetition",
+      "confidence": 0.9797920738651346,
+      "severity": 0.9797920738651346
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 4.4,
+      "end": 4.8,
+      "duration": 0.39999999999999947,
+      "text": "block",
+      "confidence": 0.7199436402320861,
+      "severity": 0.5759549121856681
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 4.6000000000000005,
+      "end": 5.0,
+      "duration": 0.39999999999999947,
+      "text": "block",
+      "confidence": 0.7284269337654113,
+      "severity": 0.5827415470123283
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 4.65,
+      "end": 5.4,
+      "duration": 0.75,
+      "text": "repetition",
+      "confidence": 0.9632055573051451,
+      "severity": 0.9632055573051451
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 4.95,
+      "end": 6.0,
+      "duration": 1.0499999999999998,
+      "text": "repetition",
+      "confidence": 0.9254953232941021,
+      "severity": 0.9254953232941021
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 5.4,
+      "end": 5.8,
+      "duration": 0.39999999999999947,
+      "text": "block",
+      "confidence": 0.143202192902565,
+      "severity": 0.11456175432205185
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 5.55,
+      "end": 6.6000000000000005,
+      "duration": 1.0500000000000007,
+      "text": "repetition",
+      "confidence": 0.9259808004637576,
+      "severity": 0.9259808004637576
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 6.0,
+      "end": 6.4,
+      "duration": 0.40000000000000036,
+      "text": "block",
+      "confidence": 0.3819529457092285,
+      "severity": 0.30556235656738306
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 6.15,
+      "end": 7.5,
+      "duration": 1.3499999999999996,
+      "text": "repetition",
+      "confidence": 0.9253360850333758,
+      "severity": 0.9253360850333758
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 7.0,
+      "end": 7.4,
+      "duration": 0.40000000000000036,
+      "text": "block",
+      "confidence": 0.6197026858329773,
+      "severity": 0.49576214866638224
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 7.05,
+      "end": 9.0,
+      "duration": 1.9500000000000002,
+      "text": "repetition",
+      "confidence": 0.961630825550999,
+      "severity": 0.961630825550999
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 8.4,
+      "end": 8.8,
+      "duration": 0.40000000000000036,
+      "text": "block",
+      "confidence": 0.6770415849685669,
+      "severity": 0.541633267974854
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 8.55,
+      "end": 9.15,
+      "duration": 0.5999999999999996,
+      "text": "repetition",
+      "confidence": 0.9372242377478642,
+      "severity": 0.8921310078159864
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 11.200000000000001,
+      "end": 11.6,
+      "duration": 0.3999999999999986,
+      "text": "block",
+      "confidence": 0.6135555350780487,
+      "severity": 0.16521492166519106
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 11.25,
+      "end": 12.0,
+      "duration": 0.75,
+      "text": "repetition",
+      "confidence": 0.9073909666051855,
+      "severity": 0.9073909666051855
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 11.55,
+      "end": 12.15,
+      "duration": 0.5999999999999996,
+      "text": "repetition",
+      "confidence": 0.9408233938092362,
+      "severity": 0.9408233938092362
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 11.6,
+      "end": 12.0,
+      "duration": 0.40000000000000036,
+      "text": "block",
+      "confidence": 0.8283787746429443,
+      "severity": 0.6627030197143561
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 11.8,
+      "end": 12.200000000000001,
+      "duration": 0.40000000000000036,
+      "text": "block",
+      "confidence": 0.6716707563400268,
+      "severity": 0.537336605072022
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 11.85,
+      "end": 12.6,
+      "duration": 0.75,
+      "text": "repetition",
+      "confidence": 0.8014913540426863,
+      "severity": 0.8014913540426863
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 12.15,
+      "end": 14.700000000000001,
+      "duration": 2.5500000000000007,
+      "text": "repetition",
+      "confidence": 0.9753362842180268,
+      "severity": 0.9753362842180268
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 14.200000000000001,
+      "end": 14.6,
+      "duration": 0.3999999999999986,
+      "text": "block",
+      "confidence": 0.748718955039978,
+      "severity": 0.5989751640319803
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 14.25,
+      "end": 15.0,
+      "duration": 0.75,
+      "text": "repetition",
+      "confidence": 0.946409621044804,
+      "severity": 0.946409621044804
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 14.55,
+      "end": 15.6,
+      "duration": 1.049999999999999,
+      "text": "repetition",
+      "confidence": 0.9141166212073234,
+      "severity": 0.9141166212073234
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 15.0,
+      "end": 15.4,
+      "duration": 0.40000000000000036,
+      "text": "block",
+      "confidence": 0.12953442966938017,
+      "severity": 0.10362754373550423
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 15.15,
+      "end": 18.0,
+      "duration": 2.8499999999999996,
+      "text": "repetition",
+      "confidence": 0.9874644973147543,
+      "severity": 0.9874644973147543
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 17.400000000000002,
+      "end": 17.8,
+      "duration": 0.3999999999999986,
+      "text": "block",
+      "confidence": 0.6870462245941162,
+      "severity": 0.549636979675291
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 17.55,
+      "end": 18.6,
+      "duration": 1.0500000000000007,
+      "text": "repetition",
+      "confidence": 0.9879635823296533,
+      "severity": 0.9879635823296533
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 18.0,
+      "end": 18.400000000000002,
+      "duration": 0.40000000000000213,
+      "text": "block",
+      "confidence": 0.7276183009147644,
+      "severity": 0.554142134475711
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 18.150000000000002,
+      "end": 18.75,
+      "duration": 0.5999999999999979,
+      "text": "repetition",
+      "confidence": 0.9674077939460562,
+      "severity": 0.9504475627696924
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 18.400000000000002,
+      "end": 18.8,
+      "duration": 0.3999999999999986,
+      "text": "block",
+      "confidence": 0.682685163974762,
+      "severity": 0.5461481311798076
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 18.45,
+      "end": 19.2,
+      "duration": 0.75,
+      "text": "repetition",
+      "confidence": 0.9678879479911862,
+      "severity": 0.9678879479911862
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 18.75,
+      "end": 19.35,
+      "duration": 0.6000000000000014,
+      "text": "repetition",
+      "confidence": 0.9726202538782353,
+      "severity": 0.9726202538782353
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 18.8,
+      "end": 19.2,
+      "duration": 0.3999999999999986,
+      "text": "block",
+      "confidence": 0.6960002202987671,
+      "severity": 0.5568001762390117
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 19.05,
+      "end": 20.7,
+      "duration": 1.6499999999999986,
+      "text": "repetition",
+      "confidence": 0.9968313285234028,
+      "severity": 0.9968313285234028
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 20.2,
+      "end": 20.6,
+      "duration": 0.40000000000000213,
+      "text": "block",
+      "confidence": 0.8211348185539245,
+      "severity": 0.6569078548431431
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 20.25,
+      "end": 21.0,
+      "duration": 0.75,
+      "text": "repetition",
+      "confidence": 0.9914183135705468,
+      "severity": 0.9914183135705468
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 20.400000000000002,
+      "end": 20.8,
+      "duration": 0.3999999999999986,
+      "text": "block",
+      "confidence": 0.814637825012207,
+      "severity": 0.6517102600097633
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 20.55,
+      "end": 21.75,
+      "duration": 1.1999999999999993,
+      "text": "repetition",
+      "confidence": 0.9959004450184781,
+      "severity": 0.9959004450184781
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 21.2,
+      "end": 21.6,
+      "duration": 0.40000000000000213,
+      "text": "block",
+      "confidence": 0.6774618921279907,
+      "severity": 0.5419695137023954
+    },
+    {
+      "type": "repetition",
+      "subtype": "signal_detected",
+      "start": 21.3,
+      "end": 22.2,
+      "duration": 0.8999999999999986,
+      "text": "repetition",
+      "confidence": 0.9793903746499795,
+      "severity": 0.9793903746499795
+    },
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 21.8,
+      "end": 22.2,
+      "duration": 0.3999999999999986,
+      "text": "block",
+      "confidence": 0.6883945355415344,
+      "severity": 0.5507156284332255
+    }
+  ],
+  "fluency_score": 0,
+  "num_repetitions": 28,
+  "num_fillers": 0,
+  "num_prolongations": 0,
+  "num_blocks": 25,
+  "passage_comparison": {
+    "distance": 443,
+    "spoken_word_count": 3,
+    "reference_word_count": 107,
+    "discrepancies": [
+      {
+        "type": "omission",
+        "reference": "होली",
+        "position": 0
+      },
+      {
+        "type": "omission",
+        "reference": "रंगों",
+        "position": 1
+      },
+      {
+        "type": "omission",
+        "reference": "का",
+        "position": 2
+      },
+      {
+        "type": "omission",
+        "reference": "त्योहार",
+        "position": 3
+      },
+      {
+        "type": "omission",
+        "reference": "है।",
+        "position": 4
+      },
+      {
+        "type": "omission",
+        "reference": "ह",
+        "position": 5
+      },
+      {
+        "type": "omission",
+        "reference": "एकता",
+        "position": 6
+      },
+      {
+        "type": "omission",
+        "reference": "तथा",
+        "position": 7
+      },
+      {
+        "type": "omission",
+        "reference": "मित्रता",
+        "position": 8
+      },
+      {
+        "type": "omission",
+        "reference": "का",
+        "position": 9
+      },
+      {
+        "type": "omission",
+        "reference": "प्रतीक",
+        "position": 10
+      },
+      {
+        "type": "omission",
+        "reference": "है।",
+        "position": 11
+      },
+      {
+        "type": "omission",
+        "reference": "इस",
+        "position": 12
+      },
+      {
+        "type": "omission",
+        "reference": "दिन",
+        "position": 13
+      },
+      {
+        "type": "omission",
+        "reference": "चारों",
+        "position": 14
+      },
+      {
+        "type": "omission",
+        "reference": "ओर",
+        "position": 15
+      },
+      {
+        "type": "omission",
+        "reference": "रंग-रोग",
+        "position": 16
+      },
+      {
+        "type": "omission",
+        "reference": "उल्लास",
+        "position": 17
+      },
+      {
+        "type": "omission",
+        "reference": "तथा",
+        "position": 18
+      },
+      {
+        "type": "omission",
+        "reference": "ंग",
+        "position": 19
+      },
+      {
+        "type": "omission",
+        "reference": "का",
+        "position": 20
+      },
+      {
+        "type": "omission",
+        "reference": "वातावरण",
+        "position": 21
+      },
+      {
+        "type": "omission",
+        "reference": "होता",
+        "position": 22
+      },
+      {
+        "type": "omission",
+        "reference": "है",
+        "position": 23
+      },
+      {
+        "type": "omission",
+        "reference": "यह",
+        "position": 24
+      },
+      {
+        "type": "omission",
+        "reference": "फाल्गुन",
+        "position": 25
+      },
+      {
+        "type": "omission",
+        "reference": "के",
+        "position": 26
+      },
+      {
+        "type": "omission",
+        "reference": "महीने",
+        "position": 27
+      },
+      {
+        "type": "omission",
+        "reference": "में",
+        "position": 28
+      },
+      {
+        "type": "omission",
+        "reference": "आती",
+        "position": 29
+      },
+      {
+        "type": "omission",
+        "reference": "है।",
+        "position": 30
+      },
+      {
+        "type": "omission",
+        "reference": "होली",
+        "position": 31
+      },
+      {
+        "type": "omission",
+        "reference": "के",
+        "position": 32
+      },
+      {
+        "type": "omission",
+        "reference": "दिन",
+        "position": 33
+      },
+      {
+        "type": "omission",
+        "reference": "साँति",
+        "position": 34
+      },
+      {
+        "type": "omission",
+        "reference": "के",
+        "position": 35
+      },
+      {
+        "type": "omission",
+        "reference": "समय",
+        "position": 36
+      },
+      {
+        "type": "omission",
+        "reference": "होलिका",
+        "position": 37
+      },
+      {
+        "type": "omission",
+        "reference": "दहन",
+        "position": 38
+      },
+      {
+        "type": "omission",
+        "reference": "किया",
+        "position": 39
+      },
+      {
+        "type": "omission",
+        "reference": "जाता",
+        "position": 40
+      },
+      {
+        "type": "omission",
+        "reference": "है।",
+        "position": 41
+      },
+      {
+        "type": "omission",
+        "reference": "लोग",
+        "position": 42
+      },
+      {
+        "type": "omission",
+        "reference": "बुराई",
+        "position": 43
+      },
+      {
+        "type": "omission",
+        "reference": "पर",
+        "position": 44
+      },
+      {
+        "type": "omission",
+        "reference": "अच्छाई",
+        "position": 45
+      },
+      {
+        "type": "omission",
+        "reference": "की",
+        "position": 46
+      },
+      {
+        "type": "omission",
+        "reference": "विजय",
+        "position": 47
+      },
+      {
+        "type": "omission",
+        "reference": "के",
+        "position": 48
+      },
+      {
+        "type": "omission",
+        "reference": "प्रतीक",
+        "position": 49
+      },
+      {
+        "type": "omission",
+        "reference": "के",
+        "position": 50
+      },
+      {
+        "type": "omission",
+        "reference": "रूप",
+        "position": 51
+      },
+      {
+        "type": "omission",
+        "reference": "में",
+        "position": 52
+      },
+      {
+        "type": "omission",
+        "reference": "मनाया",
+        "position": 53
+      },
+      {
+        "type": "omission",
+        "reference": "जाता",
+        "position": 54
+      },
+      {
+        "type": "omission",
+        "reference": "है।",
+        "position": 55
+      },
+      {
+        "type": "omission",
+        "reference": "अगले",
+        "position": 56
+      },
+      {
+        "type": "omission",
+        "reference": "दिन",
+        "position": 57
+      },
+      {
+        "type": "omission",
+        "reference": "रंग",
+        "position": 58
+      },
+      {
+        "type": "omission",
+        "reference": "खेला",
+        "position": 59
+      },
+      {
+        "type": "omission",
+        "reference": "जाता",
+        "position": 60
+      },
+      {
+        "type": "omission",
+        "reference": "है।",
+        "position": 61
+      },
+      {
+        "type": "omission",
+        "reference": "चारो",
+        "position": 62
+      },
+      {
+        "type": "omission",
+        "reference": "और",
+        "position": 63
+      },
+      {
+        "type": "omission",
+        "reference": "रंग",
+        "position": 64
+      },
+      {
+        "type": "omission",
+        "reference": "गुलाल",
+        "position": 65
+      },
+      {
+        "type": "omission",
+        "reference": "दिखाई",
+        "position": 66
+      },
+      {
+        "type": "omission",
+        "reference": "देता",
+        "position": 67
+      },
+      {
+        "type": "omission",
+        "reference": "है।",
+        "position": 68
+      },
+      {
+        "type": "omission",
+        "reference": "बच्चे",
+        "position": 69
+      },
+      {
+        "type": "omission",
+        "reference": "रंगों",
+        "position": 70
+      },
+      {
+        "type": "omission",
+        "reference": "से",
+        "position": 71
+      },
+      {
+        "type": "omission",
+        "reference": "पिचकारी",
+        "position": 72
+      },
+      {
+        "type": "omission",
+        "reference": "भड़काकर",
+        "position": 73
+      },
+      {
+        "type": "omission",
+        "reference": "मारते",
+        "position": 74
+      },
+      {
+        "type": "omission",
+        "reference": "हैं।",
+        "position": 75
+      },
+      {
+        "type": "omission",
+        "reference": "प्रेम",
+        "position": 76
+      },
+      {
+        "type": "omission",
+        "reference": "एकता",
+        "position": 77
+      },
+      {
+        "type": "omission",
+        "reference": "तथा",
+        "position": 78
+      },
+      {
+        "type": "omission",
+        "reference": "सौहार्द",
+        "position": 79
+      },
+      {
+        "type": "omission",
+        "reference": "है",
+        "position": 80
+      },
+      {
+        "type": "omission",
+        "reference": "होली",
+        "position": 81
+      },
+      {
+        "type": "omission",
+        "reference": "के",
+        "position": 82
+      },
+      {
+        "type": "omission",
+        "reference": "प्राण",
+        "position": 83
+      },
+      {
+        "type": "omission",
+        "reference": "हैं।",
+        "position": 84
+      },
+      {
+        "type": "omission",
+        "reference": "ें",
+        "position": 85
+      },
+      {
+        "type": "omission",
+        "reference": "होली",
+        "position": 86
+      },
+      {
+        "type": "omission",
+        "reference": "मनाते",
+        "position": 87
+      },
+      {
+        "type": "omission",
+        "reference": "समय",
+        "position": 88
+      },
+      {
+        "type": "omission",
+        "reference": "इन्ही",
+        "position": 89
+      },
+      {
+        "type": "omission",
+        "reference": "आदर्शों",
+        "position": 90
+      },
+      {
+        "type": "omission",
+        "reference": "को",
+        "position": 91
+      },
+      {
+        "type": "substitution",
+        "transcribed": "नमस्ते",
+        "reference": "सामने",
+        "position": 0,
+        "similarity": 0.36363636363636365,
+        "has_prolongation": false,
+        "is_partial": false
+      },
+      {
+        "type": "substitution",
+        "transcribed": "नमस्ते",
+        "reference": "रखना",
+        "position": 1,
+        "similarity": 0.19999999999999996,
+        "has_prolongation": false,
+        "is_partial": false
+      },
+      {
+        "type": "repetition",
+        "words": [
+          "नमस्ते",
+          "नमस्ते"
+        ],
+        "count": 2,
+        "position": 0
+      },
+      {
+        "type": "substitution",
+        "transcribed": "दुनिया",
+        "reference": "चाहिए।",
+        "position": 2,
+        "similarity": 0.16666666666666663,
+        "has_prolongation": false,
+        "is_partial": false
+      }
+    ],
+    "discrepancy_count": 96,
+    "raw_discrepancy_count": 96
+  },
+  "severity": "Moderate"
+}

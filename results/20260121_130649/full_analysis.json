@@ -1,0 +1,429 @@
+{
+  "transcription": "दसरा दसरा दिवाळी",
+  "stutter_events": [
+    {
+      "type": "repetition",
+      "subtype": "simple",
+      "start": 0,
+      "end": 2,
+      "duration": 2,
+      "text": "दसरा",
+      "count": 2,
+      "confidence": 0.0
+    }
+  ],
+  "fluency_score": 0,
+  "num_repetitions": 1,
+  "num_fillers": 0,
+  "num_prolongations": 0,
+  "num_blocks": 0,
+  "passage_comparison": {
+    "distance": 473,
+    "spoken_word_count": 3,
+    "reference_word_count": 83,
+    "discrepancies": [
+      {
+        "type": "omission",
+        "reference": "उलटला",
+        "position": 1
+      },
+      {
+        "type": "omission",
+        "reference": "की",
+        "position": 2
+      },
+      {
+        "type": "omission",
+        "reference": "वेघ",
+        "position": 4
+      },
+      {
+        "type": "omission",
+        "reference": "आपल्याला",
+        "position": 5
+      },
+      {
+        "type": "omission",
+        "reference": "लागायला",
+        "position": 6
+      },
+      {
+        "type": "omission",
+        "reference": "लागतात",
+        "position": 7
+      },
+      {
+        "type": "omission",
+        "reference": "सण",
+        "position": 8
+      },
+      {
+        "type": "omission",
+        "reference": "याचा",
+        "position": 9
+      },
+      {
+        "type": "omission",
+        "reference": "अर्थ",
+        "position": 10
+      },
+      {
+        "type": "omission",
+        "reference": "खरेदी",
+        "position": 11
+      },
+      {
+        "type": "omission",
+        "reference": "असाच",
+        "position": 12
+      },
+      {
+        "type": "omission",
+        "reference": "जवळपास",
+        "position": 13
+      },
+      {
+        "type": "omission",
+        "reference": "झाला",
+        "position": 14
+      },
+      {
+        "type": "omission",
+        "reference": "आहे",
+        "position": 15
+      },
+      {
+        "type": "omission",
+        "reference": "कुठलाही",
+        "position": 16
+      },
+      {
+        "type": "omission",
+        "reference": "सण",
+        "position": 17
+      },
+      {
+        "type": "omission",
+        "reference": "असो",
+        "position": 18
+      },
+      {
+        "type": "omission",
+        "reference": "गणपती",
+        "position": 19
+      },
+      {
+        "type": "omission",
+        "reference": "की",
+        "position": 21
+      },
+      {
+        "type": "omission",
+        "reference": "एक",
+        "position": 23
+      },
+      {
+        "type": "omission",
+        "reference": "दोन",
+        "position": 24
+      },
+      {
+        "type": "omission",
+        "reference": "दिवस",
+        "position": 25
+      },
+      {
+        "type": "omission",
+        "reference": "आधी",
+        "position": 26
+      },
+      {
+        "type": "omission",
+        "reference": "बाजारात",
+        "position": 27
+      },
+      {
+        "type": "omission",
+        "reference": "जायचे",
+        "position": 28
+      },
+      {
+        "type": "omission",
+        "reference": "आणि",
+        "position": 29
+      },
+      {
+        "type": "omission",
+        "reference": "फराळाचे",
+        "position": 30
+      },
+      {
+        "type": "omission",
+        "reference": "पदार्थ",
+        "position": 31
+      },
+      {
+        "type": "omission",
+        "reference": "पैश्याने",
+        "position": 32
+      },
+      {
+        "type": "omission",
+        "reference": "जाताना",
+        "position": 33
+      },
+      {
+        "type": "omission",
+        "reference": "फुगलेले",
+        "position": 34
+      },
+      {
+        "type": "omission",
+        "reference": "पाकीट",
+        "position": 35
+      },
+      {
+        "type": "omission",
+        "reference": "साफ",
+        "position": 36
+      },
+      {
+        "type": "omission",
+        "reference": "चपटे",
+        "position": 37
+      },
+      {
+        "type": "omission",
+        "reference": "करून",
+        "position": 38
+      },
+      {
+        "type": "omission",
+        "reference": "परत",
+        "position": 39
+      },
+      {
+        "type": "omission",
+        "reference": "यायचे",
+        "position": 40
+      },
+      {
+        "type": "omission",
+        "reference": "आपल्या",
+        "position": 41
+      },
+      {
+        "type": "omission",
+        "reference": "बहुतेक",
+        "position": 42
+      },
+      {
+        "type": "omission",
+        "reference": "घरात",
+        "position": 43
+      },
+      {
+        "type": "omission",
+        "reference": "पतीपत्नी",
+        "position": 44
+      },
+      {
+        "type": "omission",
+        "reference": "दोघेही",
+        "position": 45
+      },
+      {
+        "type": "omission",
+        "reference": "नोकरी",
+        "position": 46
+      },
+      {
+        "type": "omission",
+        "reference": "करत",
+        "position": 47
+      },
+      {
+        "type": "omission",
+        "reference": "असल्यामुळे",
+        "position": 48
+      },
+      {
+        "type": "omission",
+        "reference": "पुर्वीपेक्षा",
+        "position": 49
+      },
+      {
+        "type": "omission",
+        "reference": "आज",
+        "position": 50
+      },
+      {
+        "type": "omission",
+        "reference": "आपण",
+        "position": 51
+      },
+      {
+        "type": "omission",
+        "reference": "सहजपणे",
+        "position": 52
+      },
+      {
+        "type": "omission",
+        "reference": "खर्च",
+        "position": 53
+      },
+      {
+        "type": "omission",
+        "reference": "करु",
+        "position": 54
+      },
+      {
+        "type": "omission",
+        "reference": "शकतो",
+        "position": 55
+      },
+      {
+        "type": "omission",
+        "reference": "शिवाय",
+        "position": 56
+      },
+      {
+        "type": "omission",
+        "reference": "फराळाचे",
+        "position": 57
+      },
+      {
+        "type": "omission",
+        "reference": "पदार्थ",
+        "position": 58
+      },
+      {
+        "type": "omission",
+        "reference": "आयते",
+        "position": 59
+      },
+      {
+        "type": "omission",
+        "reference": "तयार",
+        "position": 60
+      },
+      {
+        "type": "omission",
+        "reference": "मिळतात",
+        "position": 61
+      },
+      {
+        "type": "omission",
+        "reference": "आधी",
+        "position": 62
+      },
+      {
+        "type": "omission",
+        "reference": "ऑर्डर",
+        "position": 63
+      },
+      {
+        "type": "omission",
+        "reference": "देऊन",
+        "position": 64
+      },
+      {
+        "type": "omission",
+        "reference": "दुकानात",
+        "position": 65
+      },
+      {
+        "type": "omission",
+        "reference": "हवेते",
+        "position": 66
+      },
+      {
+        "type": "omission",
+        "reference": "पदार्थ",
+        "position": 67
+      },
+      {
+        "type": "omission",
+        "reference": "घरी",
+        "position": 68
+      },
+      {
+        "type": "omission",
+        "reference": "आणणे",
+        "position": 69
+      },
+      {
+        "type": "omission",
+        "reference": "आपण",
+        "position": 70
+      },
+      {
+        "type": "omission",
+        "reference": "पसंद",
+        "position": 71
+      },
+      {
+        "type": "omission",
+        "reference": "करतो",
+        "position": 72
+      },
+      {
+        "type": "omission",
+        "reference": "आपण",
+        "position": 73
+      },
+      {
+        "type": "omission",
+        "reference": "लहान",
+        "position": 74
+      },
+      {
+        "type": "omission",
+        "reference": "होतो",
+        "position": 75
+      },
+      {
+        "type": "omission",
+        "reference": "तेव्हा",
+        "position": 76
+      },
+      {
+        "type": "repetition",
+        "words": [
+          "दसरा",
+          "दसरा"
+        ],
+        "count": 2,
+        "position": 0
+      },
+      {
+        "type": "omission",
+        "reference": "तयारी",
+        "position": 78
+      },
+      {
+        "type": "omission",
+        "reference": "दसरयानंतर",
+        "position": 79
+      },
+      {
+        "type": "omission",
+        "reference": "लगेच",
+        "position": 80
+      },
+      {
+        "type": "omission",
+        "reference": "करायला",
+        "position": 81
+      },
+      {
+        "type": "omission",
+        "reference": "लागायचो",
+        "position": 82
+      }
+    ],
+    "discrepancy_count": 79,
+    "raw_discrepancy_count": 79
+  },
+  "severity": "Moderate"
+}
