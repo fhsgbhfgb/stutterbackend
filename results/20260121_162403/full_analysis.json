@@ -1,0 +1,406 @@
+{
+  "transcription": "होली रंगों का त्योहार है",
+  "stutter_events": [
+    {
+      "type": "block",
+      "subtype": "signal_detected",
+      "start": 1.0,
+      "end": 1.5,
+      "duration": 0.5,
+      "text": "block",
+      "confidence": 0.8,
+      "severity": 0.7
+    },
+    {
+      "type": "prolongation",
+      "subtype": "signal_detected",
+      "start": 2.0,
+      "end": 2.5,
+      "duration": 0.5,
+      "text": "prolongation",
+      "count": 1,
+      "confidence": 0.9,
+      "severity": 0.8
+    }
+  ],
+  "fluency_score": 0,
+  "num_repetitions": 0,
+  "num_fillers": 0,
+  "num_prolongations": 1,
+  "num_blocks": 1,
+  "passage_comparison": {
+    "distance": 437,
+    "spoken_word_count": 5,
+    "reference_word_count": 107,
+    "discrepancies": [
+      {
+        "type": "omission",
+        "reference": "।",
+        "position": 5
+      },
+      {
+        "type": "omission",
+        "reference": "ह",
+        "position": 6
+      },
+      {
+        "type": "omission",
+        "reference": "एकता",
+        "position": 7
+      },
+      {
+        "type": "omission",
+        "reference": "तथा",
+        "position": 8
+      },
+      {
+        "type": "omission",
+        "reference": "मित्रता",
+        "position": 9
+      },
+      {
+        "type": "omission",
+        "reference": "प्रतीक",
+        "position": 11
+      },
+      {
+        "type": "omission",
+        "reference": "।",
+        "position": 13
+      },
+      {
+        "type": "omission",
+        "reference": "इस",
+        "position": 14
+      },
+      {
+        "type": "omission",
+        "reference": "दिन",
+        "position": 15
+      },
+      {
+        "type": "omission",
+        "reference": "चारों",
+        "position": 16
+      },
+      {
+        "type": "omission",
+        "reference": "ओर",
+        "position": 17
+      },
+      {
+        "type": "omission",
+        "reference": "रंग",
+        "position": 18
+      },
+      {
+        "type": "omission",
+        "reference": "-",
+        "position": 19
+      },
+      {
+        "type": "omission",
+        "reference": "रोग",
+        "position": 20
+      },
+      {
+        "type": "omission",
+        "reference": "उल्लास",
+        "position": 21
+      },
+      {
+        "type": "omission",
+        "reference": "तथा",
+        "position": 22
+      },
+      {
+        "type": "omission",
+        "reference": "ंग",
+        "position": 23
+      },
+      {
+        "type": "omission",
+        "reference": "वातावरण",
+        "position": 25
+      },
+      {
+        "type": "omission",
+        "reference": "होता",
+        "position": 26
+      },
+      {
+        "type": "omission",
+        "reference": "यह",
+        "position": 28
+      },
+      {
+        "type": "omission",
+        "reference": "फाल्गुन",
+        "position": 29
+      },
+      {
+        "type": "omission",
+        "reference": "महीने",
+        "position": 31
+      },
+      {
+        "type": "omission",
+        "reference": "आती",
+        "position": 33
+      },
+      {
+        "type": "omission",
+        "reference": "।",
+        "position": 35
+      },
+      {
+        "type": "omission",
+        "reference": "दिन",
+        "position": 38
+      },
+      {
+        "type": "omission",
+        "reference": "साँति",
+        "position": 39
+      },
+      {
+        "type": "omission",
+        "reference": "समय",
+        "position": 41
+      },
+      {
+        "type": "omission",
+        "reference": "होलिका",
+        "position": 42
+      },
+      {
+        "type": "omission",
+        "reference": "दहन",
+        "position": 43
+      },
+      {
+        "type": "omission",
+        "reference": "किया",
+        "position": 44
+      },
+      {
+        "type": "omission",
+        "reference": "जाता",
+        "position": 45
+      },
+      {
+        "type": "omission",
+        "reference": "।",
+        "position": 47
+      },
+      {
+        "type": "omission",
+        "reference": "लोग",
+        "position": 48
+      },
+      {
+        "type": "omission",
+        "reference": "बुराई",
+        "position": 49
+      },
+      {
+        "type": "omission",
+        "reference": "अच्छाई",
+        "position": 51
+      },
+      {
+        "type": "omission",
+        "reference": "विजय",
+        "position": 53
+      },
+      {
+        "type": "omission",
+        "reference": "प्रतीक",
+        "position": 55
+      },
+      {
+        "type": "omission",
+        "reference": "रूप",
+        "position": 57
+      },
+      {
+        "type": "omission",
+        "reference": "मनाया",
+        "position": 59
+      },
+      {
+        "type": "omission",
+        "reference": "जाता",
+        "position": 60
+      },
+      {
+        "type": "omission",
+        "reference": "।",
+        "position": 62
+      },
+      {
+        "type": "omission",
+        "reference": "अगले",
+        "position": 63
+      },
+      {
+        "type": "omission",
+        "reference": "दिन",
+        "position": 64
+      },
+      {
+        "type": "omission",
+        "reference": "रंग",
+        "position": 65
+      },
+      {
+        "type": "omission",
+        "reference": "खेला",
+        "position": 66
+      },
+      {
+        "type": "omission",
+        "reference": "जाता",
+        "position": 67
+      },
+      {
+        "type": "omission",
+        "reference": "।",
+        "position": 69
+      },
+      {
+        "type": "omission",
+        "reference": "चारो",
+        "position": 70
+      },
+      {
+        "type": "omission",
+        "reference": "रंग",
+        "position": 72
+      },
+      {
+        "type": "omission",
+        "reference": "गुलाल",
+        "position": 73
+      },
+      {
+        "type": "omission",
+        "reference": "दिखाई",
+        "position": 74
+      },
+      {
+        "type": "omission",
+        "reference": "देता",
+        "position": 75
+      },
+      {
+        "type": "omission",
+        "reference": "।",
+        "position": 77
+      },
+      {
+        "type": "omission",
+        "reference": "बच्चे",
+        "position": 78
+      },
+      {
+        "type": "omission",
+        "reference": "पिचकारी",
+        "position": 81
+      },
+      {
+        "type": "omission",
+        "reference": "भड़काकर",
+        "position": 82
+      },
+      {
+        "type": "omission",
+        "reference": "मारते",
+        "position": 83
+      },
+      {
+        "type": "omission",
+        "reference": "।",
+        "position": 85
+      },
+      {
+        "type": "omission",
+        "reference": "प्रेम",
+        "position": 86
+      },
+      {
+        "type": "omission",
+        "reference": "एकता",
+        "position": 87
+      },
+      {
+        "type": "omission",
+        "reference": "तथा",
+        "position": 88
+      },
+      {
+        "type": "omission",
+        "reference": "सौहार्द",
+        "position": 89
+      },
+      {
+        "type": "omission",
+        "reference": "प्राण",
+        "position": 93
+      },
+      {
+        "type": "omission",
+        "reference": "।",
+        "position": 95
+      },
+      {
+        "type": "omission",
+        "reference": "ें",
+        "position": 96
+      },
+      {
+        "type": "omission",
+        "reference": "मनाते",
+        "position": 98
+      },
+      {
+        "type": "omission",
+        "reference": "समय",
+        "position": 99
+      },
+      {
+        "type": "omission",
+        "reference": "इन्ही",
+        "position": 100
+      },
+      {
+        "type": "omission",
+        "reference": "आदर्शों",
+        "position": 101
+      },
+      {
+        "type": "omission",
+        "reference": "सामने",
+        "position": 103
+      },
+      {
+        "type": "omission",
+        "reference": "रखना",
+        "position": 104
+      },
+      {
+        "type": "omission",
+        "reference": "चाहिए",
+        "position": 105
+      },
+      {
+        "type": "omission",
+        "reference": "।",
+        "position": 106
+      }
+    ],
+    "discrepancy_count": 73,
+    "raw_discrepancy_count": 73
+  },
+  "severity": "Severe"
+}

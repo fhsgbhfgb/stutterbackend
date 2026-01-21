@@ -116,8 +116,11 @@ class SpeechAnalyzer:
                     return [make_serializable(i) for i in obj]
                 return obj
 
+            # Make everything serializable for JSON/MongoDB
+            full_results = make_serializable(full_results)
+
             with open(full_results_path, "w", encoding="utf-8") as f:
-                json.dump(make_serializable(full_results), f, indent=2, ensure_ascii=False)
+                json.dump(full_results, f, indent=2, ensure_ascii=False)
 
             logger.info(f"Full analysis saved to: {full_results_path}")
 
@@ -171,7 +174,7 @@ class SpeechAnalyzer:
         similarity = Levenshtein.ratio(transcription_norm, reference_norm)
 
         # Identify specific discrepancies
-        discrepancies = self._identify_discrepancies(transcription_norm, reference_norm)
+        discrepancies = self._identify_discrepancies(transcription_norm, reference_norm, language=language)
         filtered_discrepancies = self._filter_false_positives(discrepancies)
 
         return {
@@ -221,12 +224,18 @@ class SpeechAnalyzer:
         text = re.sub(r"\s+", " ", text).strip()
         return text
 
-    def _identify_discrepancies(self, transcription: str, reference: str) -> list:
+    def _identify_discrepancies(self, transcription: str, reference: str, language: str = "en") -> list:
         """Identify specific discrepancies between transcription and reference."""
         discrepancies = []
-        trans_words = transcription.split()
-        ref_words = reference.split()
-        alignment = self._align_texts(trans_words, ref_words)
+        if language in ["hi", "mr"]:
+            from indicnlp.tokenize import indic_tokenize
+            trans_words = indic_tokenize.trivial_tokenize(transcription)
+            ref_words = indic_tokenize.trivial_tokenize(reference)
+        else:
+            trans_words = transcription.split()
+            ref_words = reference.split()
+
+        alignment = self._align_texts(trans_words, ref_words, language=language)
 
         repetition_sequence = []
         last_word = None
@@ -255,7 +264,7 @@ class SpeechAnalyzer:
 
                 if trans_word != ref_word:
                     word_similarity = Levenshtein.ratio(trans_word, ref_word)
-                    has_prolongation = bool(re.search(r"(\w)\1{2,}", trans_word, re.UNICODE))
+                    has_prolongation = self._is_potential_stutter(trans_word, language=language)
                     is_partial = "-" in trans_word
 
                     if word_similarity < 0.7:
@@ -284,17 +293,17 @@ class SpeechAnalyzer:
                         })
             elif trans_idx is not None and ref_idx is None:
                 trans_word = trans_words[trans_idx]
-                if not self._is_common_variation(trans_word, ref_words):
+                if not self._is_common_variation(trans_word, ref_words, language=language):
                     discrepancies.append({
                         "type": "insertion",
                         "transcribed": trans_word,
                         "position": trans_idx,
-                        "has_prolongation": bool(re.search(r"(\w)\1{2,}", trans_word, re.UNICODE)),
+                        "has_prolongation": self._is_potential_stutter(trans_word, language=language),
                         "is_partial": "-" in trans_word,
                     })
             elif trans_idx is None and ref_idx is not None:
                 ref_word = ref_words[ref_idx]
-                if not self._is_common_variation(ref_word, trans_words):
+                if not self._is_common_variation(ref_word, trans_words, language=language):
                     discrepancies.append({"type": "omission", "reference": ref_word, "position": ref_idx})
 
         if len(repetition_sequence) > 1:
@@ -318,8 +327,16 @@ class SpeechAnalyzer:
         if Levenshtein.ratio(word1, word2) > 0.85: return True
         return False
 
-    def _is_common_variation(self, word: str, word_list: list) -> bool:
-        common_variations = ["the", "a", "an", "and", "or", "but", "so", "very", "just", "really", "basically", "well", "now", "then", "you", "know", "see", "like"]
+    def _is_common_variation(self, word: str, word_list: list, language: str = "en") -> bool:
+        if language == "en":
+            common_variations = ["the", "a", "an", "and", "or", "but", "so", "very", "just", "really", "basically", "well", "now", "then", "you", "know", "see", "like"]
+        elif language == "hi":
+            common_variations = ["है", "हैं", "का", "की", "के", "में", "से", "को", "पर", "और", "कि"]
+        elif language == "mr":
+            common_variations = ["आहे", "आहेत", "चा", "ची", "चे", "त", "आणि", "की", "तर"]
+        else:
+            common_variations = []
+
         if word.lower() in common_variations: return True
         for other_word in word_list:
             if self._are_words_equivalent(word, other_word): return True
@@ -348,7 +365,7 @@ class SpeechAnalyzer:
             filtered.append(disc)
         return filtered
 
-    def _align_texts(self, transcribed: list, reference: list) -> list:
+    def _align_texts(self, transcribed: list, reference: list, language: str = "en") -> list:
         m, n = len(transcribed), len(reference)
         dp = [[0 for _ in range(n + 1)] for _ in range(m + 1)]
         for i in range(m + 1): dp[i][0] = i
@@ -358,7 +375,7 @@ class SpeechAnalyzer:
                 if self._are_words_equivalent(transcribed[i - 1], reference[j - 1]):
                     dp[i][j] = dp[i - 1][j - 1]
                 else:
-                    cost = 0.5 if self._is_potential_stutter(transcribed[i - 1]) else 1
+                    cost = 0.5 if self._is_potential_stutter(transcribed[i - 1], language=language) else 1
                     dp[i][j] = min(dp[i - 1][j - 1] + 1, dp[i - 1][j] + cost, dp[i][j - 1] + 1)
         alignment = []
         i, j = m, n
@@ -367,15 +384,19 @@ class SpeechAnalyzer:
                 alignment.append((i - 1, j - 1)); i -= 1; j -= 1
             elif i > 0 and j > 0 and dp[i][j] == dp[i - 1][j - 1] + 1:
                 alignment.append((i - 1, j - 1)); i -= 1; j -= 1
-            elif i > 0 and dp[i][j] == dp[i - 1][j] + (0.5 if self._is_potential_stutter(transcribed[i - 1]) else 1):
+            elif i > 0 and dp[i][j] == dp[i - 1][j] + (0.5 if self._is_potential_stutter(transcribed[i - 1], language=language) else 1):
                 alignment.append((i - 1, None)); i -= 1
             else:
                 alignment.append((None, j - 1)); j -= 1
         return list(reversed(alignment))
 
-    def _is_potential_stutter(self, word: str) -> bool:
+    def _is_potential_stutter(self, word: str, language: str = "en") -> bool:
         if "-" in word: return True
-        if re.search(r"(\w)\1{2,}", word, re.UNICODE): return True
+        if language == "en":
+            if re.search(r"([a-z])\1{2,}", word, re.IGNORECASE): return True
+        else:
+            # Devanagari repetitions (e.g. ssss)
+            if re.search(r"([\u0900-\u097F])\1{2,}", word): return True
         return False
 
     def _calculate_fluency_score(self, result, passage_comparison) -> tuple:
@@ -383,10 +404,16 @@ class SpeechAnalyzer:
             total_syllables = max(1, len(result.text.split()))
             weighted_stutters = (len(result.repetitions) * 1.0 +
                                 len(result.fillers) * 0.5 +
+                                len(result.pronunciation_errors) * 1.5 +
                                 passage_comparison["discrepancy_count"] * 1.5)
             percent_ss = min(100, (weighted_stutters / total_syllables) * 100)
             fluency_score = 100 - int(percent_ss)
-            severity = "Moderate" # simplified
+
+            if fluency_score > 90: severity = "Fluent"
+            elif fluency_score > 75: severity = "Mild"
+            elif fluency_score > 50: severity = "Moderate"
+            else: severity = "Severe"
+
             return fluency_score, severity
         except Exception:
             return 50, "Moderate"
@@ -394,19 +421,33 @@ class SpeechAnalyzer:
     def _format_stutter_events(self, result) -> list:
         formatted_events = []
         for rep in result.repetitions:
+            event_type = rep.get("type", "repetition")
             formatted_events.append({
-                "type": "repetition", "subtype": rep.get("repetition_type", "simple"),
-                "start": rep.get("start", 0), "end": rep.get("end", 0),
+                "type": event_type,
+                "subtype": rep.get("subtype", rep.get("repetition_type", "simple")),
+                "start": rep.get("start", 0),
+                "end": rep.get("end", 0),
                 "duration": rep.get("end", 0) - rep.get("start", 0),
-                "text": rep.get("word", ""), "count": rep.get("count", 1),
+                "text": rep.get("word", rep.get("text", event_type)),
+                "count": rep.get("count", 1),
                 "confidence": rep.get("confidence", 0.0),
+                "severity": rep.get("severity", rep.get("confidence", 0.0)),
             })
         for filler in result.fillers:
             formatted_events.append({
                 "type": "filler", "subtype": filler.get("filler_type", "hesitation"),
                 "start": filler.get("start", 0), "end": filler.get("end", 0),
                 "duration": filler.get("end", 0) - filler.get("start", 0),
-                "text": filler.get("word", ""), "confidence": filler.get("confidence", 0.0),
+                "text": filler.get("word", "filler"), "confidence": filler.get("confidence", 0.0),
+                "severity": filler.get("confidence", 0.0),
+            })
+        for block in result.pronunciation_errors: # We stored blocks here
+            formatted_events.append({
+                "type": "block", "subtype": block.get("subtype", "signal_detected"),
+                "start": block.get("start", 0), "end": block.get("end", 0),
+                "duration": block.get("end", 0) - block.get("start", 0),
+                "text": "block", "confidence": block.get("confidence", 0.0),
+                "severity": block.get("severity", 0.0),
             })
         formatted_events.sort(key=lambda x: x["start"])
         return formatted_events

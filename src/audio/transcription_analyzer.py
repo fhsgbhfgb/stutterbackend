@@ -5,7 +5,6 @@ Enhanced speech transcription and analysis module with high accuracy detection.
 Handles transcription, filler detection, and exports in multiple formats.
 """
 import os
-import replicate
 import soundfile as sf
 import tempfile 
 import numpy as np
@@ -28,6 +27,9 @@ import Levenshtein
 import librosa
 from indicnlp.tokenize import indic_tokenize
 from indicnlp import common
+from src.audio.audio_config import AudioConfig
+from src.audio.feature_extractor import FeatureExtractor
+from src.audio.stutter_detector import StutterDetector, StutterType
 
 # Download required NLTK data on first run
 nltk.download('punkt', quiet=True)
@@ -63,6 +65,9 @@ class TranscriptionResult:
 class TranscriptionAnalyzer:
     def __init__(self, model_size: str = "small", language: str = "en"):
         self.language = language
+        self.config = AudioConfig()
+        self.feature_extractor = FeatureExtractor(self.config)
+        self.stutter_detector = StutterDetector()
         try:
             if self.language == "en":
                 self.speech_patterns = {
@@ -93,27 +98,25 @@ class TranscriptionAnalyzer:
 
             self._compile_patterns()
 
-            if self.language in ["hi", "mr"]:
+            if self.language in ["en", "hi", "mr"]:
                 common.set_resources_path(os.environ.get("INDIC_RESOURCES_PATH", "indic_nlp_resources"))
 
-            if self.language in ["hi", "mr"]:
-                from transformers import pipeline
-                model_id = "ai4bharat/indic-conformer-600m-multilingual"
-                if model_id not in ASR_PIPELINE_CACHE:
-                    try:
-                        logger.info(f"Loading model {model_id}...")
-                        ASR_PIPELINE_CACHE[model_id] = pipeline(
-                            "automatic-speech-recognition",
-                            model=model_id,
-                            trust_remote_code=True,
-                            device=0 if torch.cuda.is_available() else -1,
-                        )
-                    except Exception as e:
-                        logger.warning(f"Failed to load {model_id}: {e}. Falling back to Whisper.")
-                        ASR_PIPELINE_CACHE[model_id] = None
-                self.asr_pipeline = ASR_PIPELINE_CACHE[model_id]
-            else:
-                self.asr_pipeline = None
+            from transformers import pipeline
+            model_id = "ai4bharat/indic-conformer-600m-multilingual"
+            if model_id not in ASR_PIPELINE_CACHE:
+                try:
+                    logger.info(f"Loading model {model_id}...")
+                    ASR_PIPELINE_CACHE[model_id] = pipeline(
+                        "automatic-speech-recognition",
+                        model=model_id,
+                        trust_remote_code=True,
+                        device=0 if torch.cuda.is_available() else -1,
+                        token=os.environ.get("HUGGING_FACE_HUB_TOKEN")
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to load {model_id}: {e}")
+                    raise e
+            self.asr_pipeline = ASR_PIPELINE_CACHE[model_id]
 
         except Exception as e:
             logger.error(f"Error initializing TranscriptionAnalyzer: {e}")
@@ -142,59 +145,60 @@ class TranscriptionAnalyzer:
 
     def transcribe_with_enhanced_detection(self, audio_data: np.ndarray, sample_rate: int) -> TranscriptionResult:
         try:
-            if self.language == "en":
-                with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_wav:
-                    sf.write(tmp_wav.name, audio_data, sample_rate)
-                    audio_path = tmp_wav.name
-                output = replicate.run(
-                    "openai/whisper:8099696689d249cf8b122d833c36ac3f75505c666a395ca40ef26f68e7d3d16e",
-                    input={"audio": open(audio_path, "rb"), "language": "en", "task": "transcribe", "temperature": 0.0}
-                )
-                text = output.get("transcription", "")
-                segments = output.get("segments", [])
-                if not segments:
-                    segments = [{"text": text, "start": 0.0, "end": len(audio_data) / sample_rate, "id": 0}]
-                os.remove(audio_path)
-            else:
-                if self.asr_pipeline is not None:
-                    audio_input = audio_data.astype(np.float32)
-                    if sample_rate != 16000:
-                        audio_input = librosa.resample(audio_data, orig_sr=sample_rate, target_sr=16000)
-                    output = self.asr_pipeline(audio_input, return_timestamps="word", generate_kwargs={"language": self.language})
-                else:
-                    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_wav:
-                        sf.write(tmp_wav.name, audio_data, sample_rate)
-                        audio_path = tmp_wav.name
-                    output_whisper = replicate.run(
-                        "openai/whisper:8099696689d249cf8b122d833c36ac3f75505c666a395ca40ef26f68e7d3d16e",
-                        input={"audio": open(audio_path, "rb"), "language": self.language, "task": "transcribe"}
-                    )
-                    os.remove(audio_path)
-                    text = output_whisper.get("transcription", "")
-                    chunks = output_whisper.get("chunks", []) or output_whisper.get("segments", [])
-                    output = {"text": text, "chunks": chunks}
+            audio_input = audio_data.astype(np.float32)
+            if sample_rate != 16000:
+                audio_input = librosa.resample(audio_data, orig_sr=sample_rate, target_sr=16000)
 
-                text = output["text"]
-                chunks = output.get("chunks", [])
-                word_timings = []
-                for chunk in chunks:
-                    word_timings.append({
-                        "word": chunk["text"],
-                        "start": chunk["timestamp"][0] if chunk["timestamp"][0] is not None else 0.0,
-                        "end": chunk["timestamp"][1] if chunk["timestamp"][1] is not None else 0.0,
-                        "confidence": 1.0
-                    })
-                segments = [{"text": text, "start": 0.0, "end": word_timings[-1]["end"] if word_timings else 0.0, "words": word_timings, "id": 0}]
+            # Using indic-conformer for all languages
+            output = self.asr_pipeline(audio_input, return_timestamps="word", generate_kwargs={"language": self.language})
+
+            text = output["text"]
+            chunks = output.get("chunks", [])
+            word_timings = []
+            for chunk in chunks:
+                word_timings.append({
+                    "word": chunk["text"],
+                    "start": chunk["timestamp"][0] if chunk["timestamp"][0] is not None else 0.0,
+                    "end": chunk["timestamp"][1] if chunk["timestamp"][1] is not None else 0.0,
+                    "confidence": 1.0
+                })
+            segments = [{"text": text, "start": 0.0, "end": word_timings[-1]["end"] if word_timings else 0.0, "words": word_timings, "id": 0}]
 
             word_timings = self._extract_enhanced_word_timings(segments)
             fillers = self._detect_fillers_with_context(word_timings)
             repetitions = self._enhanced_repetition_detection(word_timings)
 
+            # Use StutterDetector for signal-based analysis (blocks and prolongations)
+            features = self.feature_extractor.extract_features(audio_data)
+            signal_events = self.stutter_detector.analyze_speech(features, audio_data, sample_rate)
+
+            # Map signal events back to result format
+            prolongations = []
+            blocks = []
+            silences = []
+
+            for event in signal_events:
+                event_dict = {
+                    "start": event.start_time,
+                    "end": event.end_time,
+                    "confidence": event.confidence,
+                    "severity": event.severity,
+                    "type": event.stutter_type.value,
+                    "subtype": "signal_detected"
+                }
+                if event.stutter_type == StutterType.PROLONGATION:
+                    prolongations.append(event_dict)
+                elif event.stutter_type == StutterType.BLOCK:
+                    blocks.append(event_dict)
+                    silences.append({**event_dict, "is_block": True})
+
             return TranscriptionResult(
                 text=text, segments=segments, word_timings=word_timings, fillers=fillers,
-                repetitions=repetitions, pronunciation_errors=[], confidence=1.0,
-                duration=segments[-1]["end"] if segments else 0, speech_rate=0.0,
-                language_score=1.0, silences=[]
+                repetitions=repetitions + prolongations, # Combine signal prolongations with repetitions for visualization
+                pronunciation_errors=blocks, # Use blocks as pronunciation errors for visualization dashboard
+                confidence=1.0,
+                duration=segments[-1]["end"] if segments else 0, speech_rate=features.speech_rate,
+                language_score=1.0, silences=silences
             )
         except Exception as e:
             logger.error(f"Error in enhanced transcription: {e}")
