@@ -21,8 +21,12 @@ logger = logging.getLogger(__name__)
 # Initialize inflect engine for number conversion
 p = inflect.engine()
 
-# Grandfather's passage for reference
-GRANDFATHERS_PASSAGE = """You wish to know about my grandfather. Well, he is nearly 93 years old, yet he still thinks as swiftly as ever. He dresses himself in an old black frock coat, usually several buttons missing. A long beard clings to his chin, giving those who observe him a pronounced feeling of the utmost respect. When he speaks, his voice is just a bit cracked and quivers a bit. Twice each day he plays skillfully and with zest upon a small organ. Except in the winter when the snow or ice prevents, he slowly takes a short walk in the open air each day. We have often urged him to walk more and smoke less, but he always answers, “Banana oil!”. Grandfather likes to be modern in his language."""
+# Reference passages for different languages
+REFERENCE_PASSAGES = {
+    "en": """You wish to know about my grandfather. Well, he is nearly 93 years old, yet he still thinks as swiftly as ever. He dresses himself in an old black frock coat, usually several buttons missing. A long beard clings to his chin, giving those who observe him a pronounced feeling of the utmost respect. When he speaks, his voice is just a bit cracked and quivers a bit. Twice each day he plays skillfully and with zest upon a small organ. Except in the winter when the snow or ice prevents, he slowly takes a short walk in the open air each day. We have often urged him to walk more and smoke less, but he always answers, “Banana oil!”. Grandfather likes to be modern in his language.""",
+    "hi": """होली रंगों का त्योहार है। ह एकता तथा मित्रता का प्रतीक है। "इस दिन चारों ओर रंग-रोग उल्लास तथा उमंग का वातावरण होता है| यह फाल्गुन के महीने में आती है। होली के दिन साँति के समय होलिका दहन किया जाता है। लोग बुराई पर अच्छाई की विजय के प्रतीक के रूप में मनाया जाता है। अगले दिन रंग खेला जाता है। चारो और रंग, गुलाल दिखाई देता है। बच्चे रंगों से पिचकारी भड़काकर मारते हैं। प्रेम, एकता तथा सौहार्द है होली के प्राण हैं। हमें होली मनाते समय इन्ही आदर्शों को सामने रखना चाहिए।""",
+    "mr": """दसरा उलटला की दिवाळीचे वेघ आपल्याला लागायला लागतात. सण याचा अर्थ खरेदी असाच जवळपास झाला आहे. कुठलाही सण असो गणपती दसरा की दिवाळी. एक दोन दिवस आधी बाजारात जायचे आणि फराळाचे पदार्थ. पैश्याने जाताना फुगलेले पाकीट साफ चपटे करून परत यायचे. आपल्या बहुतेक घरात पतीपत्नी दोघेही नोकरी करत असल्यामुळे. पुर्वीपेक्षा आज आपण सहजपणे खर्च करु शकतो. शिवाय फराळाचे पदार्थ आयते तयार मिळतात. आधी ऑर्डर देऊन दुकानात हवेते पदार्थ घरी आणणे आपण पसंद करतो. आपण लहान होतो तेव्हा दिवाळीची तयारी दसरयानंतर लगेच करायला लागायचो."""
+}
 
 
 class SpeechAnalyzer:
@@ -32,7 +36,7 @@ class SpeechAnalyzer:
             self.language = language
             self.transcriber = TranscriptionAnalyzer(model_size="medium", language=language)
             self.visualizer = SpeechVisualizer()
-            logger.info(f"Speech Analyzer initialized successfully for language: {language}")
+            logger.info(f"Speech Analyzer (Transcription-based) initialized successfully for language: {language}")
         except Exception as e:
             logger.error(f"Error initializing Speech Analyzer: {e}")
             raise
@@ -58,7 +62,7 @@ class SpeechAnalyzer:
             )
 
             logger.info("Comparing with reference passage...")
-            passage_comparison = self._compare_with_reference(result.text)
+            passage_comparison = self._compare_with_reference(result.text, language=language)
 
             logger.info("Calculating fluency score...")
             fluency_score, severity = self._calculate_fluency_score(
@@ -78,36 +82,47 @@ class SpeechAnalyzer:
                 except Exception as e:
                     logger.warning(f"Could not read visualization: {e}")
 
-            # Build the full results dictionary (same as your return)
+            # Format combined stutter events
+            stutter_events = self._format_stutter_events(result)
+
+            # Build the full results dictionary
             full_results = {
                 "transcription": result.text,
-                "stutter_events": self._format_stutter_events(result),
+                "stutter_events": stutter_events,
                 "fluency_score": fluency_score,
-                "num_repetitions": len(result.repetitions),
-                "num_fillers": len(result.fillers),
-                "num_prolongations": len(
-                    [e for e in result.pronunciation_errors if "prolongation" in e.get("event_type", "")]
-                ),
-                "num_blocks": len(
-                    [s for s in result.silences if s.get("is_block", False)]
-                ),
+                "num_repetitions": len([e for e in stutter_events if e["type"] == "repetition"]),
+                "num_fillers": len([e for e in stutter_events if e["type"] == "filler"]),
+                "num_prolongations": len([e for e in stutter_events if e["type"] == "prolongation"]),
+                "num_blocks": len([e for e in stutter_events if e["type"] == "block"]),
                 "passage_comparison": passage_comparison,
                 "severity": severity,
-                #"visualization": visualization_base64,
             }
 
-            # SAVE FULL JSON (this always runs if no exception)
+            # SAVE FULL JSON
             full_results_path = output_dir / "full_analysis.json"
+
+            # Helper to convert numpy types to python types for JSON serialization
+            import numpy as np
+            def make_serializable(obj):
+                if isinstance(obj, np.ndarray):
+                    return obj.tolist()
+                elif isinstance(obj, (np.float32, np.float64)):
+                    return float(obj)
+                elif isinstance(obj, (np.int32, np.int64)):
+                    return int(obj)
+                elif isinstance(obj, dict):
+                    return {k: make_serializable(v) for k, v in obj.items()}
+                elif isinstance(obj, list):
+                    return [make_serializable(i) for i in obj]
+                return obj
+
+            # Make everything serializable for JSON/MongoDB
+            full_results = make_serializable(full_results)
+
             with open(full_results_path, "w", encoding="utf-8") as f:
                 json.dump(full_results, f, indent=2, ensure_ascii=False)
 
             logger.info(f"Full analysis saved to: {full_results_path}")
-
-            # Optional: Save plain transcription
-            trans_path = transcripts_dir / "transcription.txt"
-            with open(trans_path, "w", encoding="utf-8") as f:
-                f.write(result.text or "No transcription available")
-            logger.info(f"Transcription saved to: {trans_path}")
 
             return full_results
         except Exception as e:
@@ -123,7 +138,6 @@ class SpeechAnalyzer:
 
     def _generate_visualizations(self, audio_data: np.ndarray, result, viz_dir: Path):
         """Generate visualizations for analysis."""
-        # Combine all events for visualization
         all_events = (
             result.repetitions
             + result.fillers
@@ -139,768 +153,301 @@ class SpeechAnalyzer:
         )
         self.visualizer.save_visualization(fig_wave, viz_dir / "waveform_analysis.png")
 
-    def _compare_with_reference(self, transcription: str) -> dict:
-        """
-        Compare transcription with the Grandfather's Passage to identify discrepancies.
+    def _compare_with_reference(self, transcription: str, language: str = "en") -> dict:
+        """Compare transcription with the reference passage to identify discrepancies."""
+        reference_text = REFERENCE_PASSAGES.get(language, REFERENCE_PASSAGES["en"])
 
-        Returns:
-            dict: Comparison metrics and identified discrepancies
-        """
         # Normalize texts for comparison
-        transcription_norm = self._normalize_text_for_comparison(transcription)
-        reference_norm = self._normalize_text_for_comparison(GRANDFATHERS_PASSAGE)
+        transcription_norm = self._normalize_text_for_comparison(transcription, language=language)
+        reference_norm = self._normalize_text_for_comparison(reference_text, language=language)
 
-        reference_norm = " ".join(
-            reference_norm.split()[: len(transcription_norm.split())]
-        )
+        if language in ["hi", "mr"]:
+            from indicnlp.tokenize import indic_tokenize
+            transcription_words = indic_tokenize.trivial_tokenize(transcription_norm)
+            reference_words = indic_tokenize.trivial_tokenize(reference_norm)
+        else:
+            transcription_words = transcription_norm.split()
+            reference_words = reference_norm.split()
 
         # Calculate Levenshtein distance and similarity ratio
         distance = Levenshtein.distance(transcription_norm, reference_norm)
         similarity = Levenshtein.ratio(transcription_norm, reference_norm)
 
         # Identify specific discrepancies
-        discrepancies = self._identify_discrepancies(transcription_norm, reference_norm)
-
-        # Filter out likely false positives
+        discrepancies = self._identify_discrepancies(transcription_norm, reference_norm, language=language)
         filtered_discrepancies = self._filter_false_positives(discrepancies)
 
         return {
             "distance": distance,
-            "spoken_word_count": len(transcription_norm.split()),
-            "reference_word_count": len(GRANDFATHERS_PASSAGE.split()),
+            "spoken_word_count": len(transcription_words),
+            "reference_word_count": len(reference_words),
             "discrepancies": filtered_discrepancies,
             "discrepancy_count": len(filtered_discrepancies),
             "raw_discrepancy_count": len(discrepancies),
         }
 
-    def _normalize_text_for_comparison(self, text: str) -> str:
-        """
-        Normalize text for more accurate comparison.
+    def _normalize_text_for_comparison(self, text: str, language: str = "en") -> str:
+        """Normalize text for more accurate comparison."""
+        if language == "en":
+            text = text.lower()
 
-        - Convert to lowercase
-        - Normalize numbers (convert digits to words)
-        - Remove punctuation
-        - Standardize whitespace
-        - Remove common filler words
-        """
-        # Convert to lowercase
-        text = text.lower()
+        if language in ["hi", "mr"]:
+            text = re.sub(r"[^\u0900-\u097F\s\-]", "", text)
+        else:
+            text = re.sub(r"[^\w\s\-]", "", text)
 
-        # Remove punctuation except hyphens (important for stutters)
-        text = re.sub(r"[^\w\s\-]", "", text)
-
-        # Standardize whitespace
         text = re.sub(r"\s+", " ", text).strip()
 
-        # Normalize numbers (convert digits to words)
-        words = []
-        for word in text.split():
-            if word.isdigit():
-                try:
-                    # Convert number to words (e.g., "93" to "ninety-three")
-                    word = p.number_to_words(word).replace(" and ", " ")
-                except:
-                    pass  # Keep original if conversion fails
-            words.append(word)
+        if language == "en":
+            words = []
+            for word in text.split():
+                if word.isdigit():
+                    try:
+                        word = p.number_to_words(word).replace(" and ", " ")
+                    except:
+                        pass
+                words.append(word)
+            text = " ".join(words)
 
-        text = " ".join(words)
+        if language == "en":
+            fillers = ["um", "uh", "er", "ah", "like", "you know"]
+        elif language == "hi":
+            fillers = ["उम", "अह", "एर", "हम", "हम्म", "मतलब"]
+        elif language == "mr":
+            fillers = ["उम", "अह", "एर", "हम", "हम्म", "म्हणजे"]
+        else:
+            fillers = []
 
-        # Remove common filler words that don't affect meaning
-        fillers = ["um", "uh", "er", "ah", "like", "you know"]
         for filler in fillers:
-            text = re.sub(r"\b" + filler + r"\b", "", text)
+            text = re.sub(r"\b" + filler + r"\b", "", text, flags=re.UNICODE)
 
-        # Clean up any double spaces created by filler removal
         text = re.sub(r"\s+", " ", text).strip()
-
         return text
 
-    def _identify_discrepancies(self, transcription: str, reference: str) -> list:
-        """
-        Identify specific discrepancies between transcription and reference.
-
-        Uses a more sophisticated alignment algorithm to identify true discrepancies.
-
-        Returns:
-            list: List of discrepancy objects with type and details
-        """
+    def _identify_discrepancies(self, transcription: str, reference: str, language: str = "en") -> list:
+        """Identify specific discrepancies between transcription and reference."""
         discrepancies = []
+        if language in ["hi", "mr"]:
+            from indicnlp.tokenize import indic_tokenize
+            trans_words = indic_tokenize.trivial_tokenize(transcription)
+            ref_words = indic_tokenize.trivial_tokenize(reference)
+        else:
+            trans_words = transcription.split()
+            ref_words = reference.split()
 
-        # Split into words
-        trans_words = transcription.split()
-        ref_words = reference.split()
+        alignment = self._align_texts(trans_words, ref_words, language=language)
 
-        # Use dynamic programming to align words
-        alignment = self._align_texts(trans_words, ref_words)
-
-        # Track consecutive repetitions
         repetition_sequence = []
         last_word = None
 
         for i, (trans_idx, ref_idx) in enumerate(alignment):
-            # Handle repetitions
             if trans_idx is not None:
                 current_word = trans_words[trans_idx]
-
-                # Check for repetition
                 if last_word == current_word:
                     repetition_sequence.append(current_word)
                 else:
-                    # Process any completed repetition sequence
                     if len(repetition_sequence) > 1:
-                        discrepancies.append(
-                            {
-                                "type": "repetition",
-                                "words": repetition_sequence.copy(),
-                                "count": len(repetition_sequence),
-                                "position": trans_idx - len(repetition_sequence),
-                            }
-                        )
+                        discrepancies.append({
+                            "type": "repetition",
+                            "words": repetition_sequence.copy(),
+                            "count": len(repetition_sequence),
+                            "position": trans_idx - len(repetition_sequence),
+                        })
                     repetition_sequence = [current_word]
-
                 last_word = current_word
 
-            # Process regular alignment discrepancies
             if trans_idx is not None and ref_idx is not None:
-                # Both words exist - check for mismatch
                 trans_word = trans_words[trans_idx]
                 ref_word = ref_words[ref_idx]
-
-                # Skip if words are equivalent after normalization
                 if self._are_words_equivalent(trans_word, ref_word):
                     continue
 
                 if trans_word != ref_word:
-                    # Calculate similarity
                     word_similarity = Levenshtein.ratio(trans_word, ref_word)
-
-                    # Check for prolongation (repeated characters)
-                    has_prolongation = bool(re.search(r"([a-z])\1{2,}", trans_word))
-
-                    # Check for partial word (hyphenated)
+                    has_prolongation = self._is_potential_stutter(trans_word, language=language)
                     is_partial = "-" in trans_word
 
-                    if word_similarity < 0.7:  # Significant difference
-                        discrepancies.append(
-                            {
-                                "type": "substitution",
-                                "transcribed": trans_word,
-                                "reference": ref_word,
-                                "position": trans_idx,
-                                "similarity": word_similarity,
-                                "has_prolongation": has_prolongation,
-                                "is_partial": is_partial,
-                            }
-                        )
-                    elif has_prolongation:
-                        discrepancies.append(
-                            {
-                                "type": "prolongation",
-                                "transcribed": trans_word,
-                                "reference": ref_word,
-                                "position": trans_idx,
-                            }
-                        )
-                    elif is_partial:
-                        discrepancies.append(
-                            {
-                                "type": "partial_word",
-                                "transcribed": trans_word,
-                                "reference": ref_word,
-                                "position": trans_idx,
-                            }
-                        )
-            elif trans_idx is not None and ref_idx is None:
-                # Word in transcription but not in reference
-                # Check if it's a common variation or synonym
-                trans_word = trans_words[trans_idx]
-                if not self._is_common_variation(trans_word, ref_words):
-                    discrepancies.append(
-                        {
-                            "type": "insertion",
+                    if word_similarity < 0.7:
+                        discrepancies.append({
+                            "type": "substitution",
                             "transcribed": trans_word,
+                            "reference": ref_word,
                             "position": trans_idx,
-                            "has_prolongation": bool(
-                                re.search(r"([a-z])\1{2,}", trans_word)
-                            ),
-                            "is_partial": "-" in trans_word,
-                        }
-                    )
+                            "similarity": word_similarity,
+                            "has_prolongation": has_prolongation,
+                            "is_partial": is_partial,
+                        })
+                    elif has_prolongation:
+                        discrepancies.append({
+                            "type": "prolongation",
+                            "transcribed": trans_word,
+                            "reference": ref_word,
+                            "position": trans_idx,
+                        })
+                    elif is_partial:
+                        discrepancies.append({
+                            "type": "partial_word",
+                            "transcribed": trans_word,
+                            "reference": ref_word,
+                            "position": trans_idx,
+                        })
+            elif trans_idx is not None and ref_idx is None:
+                trans_word = trans_words[trans_idx]
+                if not self._is_common_variation(trans_word, ref_words, language=language):
+                    discrepancies.append({
+                        "type": "insertion",
+                        "transcribed": trans_word,
+                        "position": trans_idx,
+                        "has_prolongation": self._is_potential_stutter(trans_word, language=language),
+                        "is_partial": "-" in trans_word,
+                    })
             elif trans_idx is None and ref_idx is not None:
-                # Word in reference but not in transcription
                 ref_word = ref_words[ref_idx]
-                if not self._is_common_variation(ref_word, trans_words):
-                    discrepancies.append(
-                        {"type": "omission", "reference": ref_word, "position": ref_idx}
-                    )
+                if not self._is_common_variation(ref_word, trans_words, language=language):
+                    discrepancies.append({"type": "omission", "reference": ref_word, "position": ref_idx})
 
-        # Check for any final repetition sequence
         if len(repetition_sequence) > 1:
-            discrepancies.append(
-                {
-                    "type": "repetition",
-                    "words": repetition_sequence,
-                    "count": len(repetition_sequence),
-                    "position": len(trans_words) - len(repetition_sequence),
-                }
-            )
-
+            discrepancies.append({
+                "type": "repetition",
+                "words": repetition_sequence,
+                "count": len(repetition_sequence),
+                "position": len(trans_words) - len(repetition_sequence),
+            })
         return discrepancies
 
     def _are_words_equivalent(self, word1: str, word2: str) -> bool:
-        """
-        Check if two words are semantically equivalent despite different forms.
-
-        Handles:
-        - Numbers in digit vs word form
-        - Common contractions
-        - Spelling variations
-        """
-        # Check for exact match
-        if word1 == word2:
-            return True
-
-        # Check for number equivalence
+        if word1 == word2: return True
         if word1.isdigit() or word2.isdigit():
             try:
-                # Convert digit to word form if needed
-                word1_norm = (
-                    p.number_to_words(word1).replace(" and ", " ")
-                    if word1.isdigit()
-                    else word1
-                )
-                word2_norm = (
-                    p.number_to_words(word2).replace(" and ", " ")
-                    if word2.isdigit()
-                    else word2
-                )
-
-                # Compare normalized forms
-                if word1_norm == word2_norm:
-                    return True
-
-                # Handle hyphenated numbers
-                word1_norm = word1_norm.replace("-", " ")
-                word2_norm = word2_norm.replace("-", " ")
-                if word1_norm == word2_norm:
-                    return True
-            except:
-                pass
-
-        # Check for high similarity (spelling variations)
-        similarity = Levenshtein.ratio(word1, word2)
-        if similarity > 0.85:
-            return True
-
-        # Check for common synonyms and variations
-        synonyms = {
-            "renounced": ["pronounced"],
-            "pronounced": ["renounced"],
-            "jest": ["zest"],
-            "zest": ["jest"],
-            "addresses": ["dresses"],
-            "dresses": ["addresses"],
-            "bit": ["trifle"],
-            "trifle": ["bit"],
-        }
-
-        if word1 in synonyms and word2 in synonyms.get(word1, []):
-            return True
-
+                word1_norm = p.number_to_words(word1).replace(" and ", " ") if word1.isdigit() else word1
+                word2_norm = p.number_to_words(word2).replace(" and ", " ") if word2.isdigit() else word2
+                if word1_norm == word2_norm: return True
+                if word1_norm.replace("-", " ") == word2_norm.replace("-", " "): return True
+            except: pass
+        if Levenshtein.ratio(word1, word2) > 0.85: return True
         return False
 
-    def _is_common_variation(self, word: str, word_list: list) -> bool:
-        """
-        Check if a word is a common variation of any word in the list.
+    def _is_common_variation(self, word: str, word_list: list, language: str = "en") -> bool:
+        if language == "en":
+            common_variations = ["the", "a", "an", "and", "or", "but", "so", "very", "just", "really", "basically", "well", "now", "then", "you", "know", "see", "like"]
+        elif language == "hi":
+            common_variations = ["है", "हैं", "का", "की", "के", "में", "से", "को", "पर", "और", "कि"]
+        elif language == "mr":
+            common_variations = ["आहे", "आहेत", "चा", "ची", "चे", "त", "आणि", "की", "तर"]
+        else:
+            common_variations = []
 
-        Used to reduce false positives in insertions/omissions.
-        """
-        # Common words that might be added/omitted in natural speech
-        common_variations = [
-            "the",
-            "a",
-            "an",
-            "and",
-            "or",
-            "but",
-            "so",
-            "very",
-            "quite",
-            "just",
-            "really",
-            "actually",
-            "basically",
-            "well",
-            "now",
-            "then",
-            "you",
-            "know",
-            "see",
-            "like",
-        ]
-
-        # Check if it's a common filler/connector word
-        if word.lower() in common_variations:
-            return True
-
-        # Check if it's a close match to any word in the list
+        if word.lower() in common_variations: return True
         for other_word in word_list:
-            if self._are_words_equivalent(word, other_word):
-                return True
-
+            if self._are_words_equivalent(word, other_word): return True
         return False
 
     def _filter_false_positives(self, discrepancies: list) -> list:
-        """
-        Filter out likely false positives from the discrepancies list.
-
-        Returns:
-            list: Filtered discrepancies
-        """
         filtered = []
-
-        # Words that are commonly misinterpreted or have multiple valid forms
-        common_variations = {
-            "ninety-three": ["93", "ninety three", "93 years"],
-            "93": ["ninety-three", "ninety three"],
-            "dresses": ["addresses", "dressed"],
-            "addresses": ["dresses", "dressed"],
-            "pronounced": ["renounced"],
-            "renounced": ["pronounced"],
-            "zest": ["jest"],
-            "jest": ["zest"],
-            "trifle": ["bit", "little"],
-            "bit": ["trifle", "little"],
-        }
-
         for disc in discrepancies:
-            # Keep all repetitions, prolongations, and partial words as they're likely real stutters
             if disc["type"] in ["repetition", "prolongation", "partial_word"]:
                 filtered.append(disc)
                 continue
-
-            # For substitutions, check if they're common variations
             if disc["type"] == "substitution":
-                # If it has prolongation or is partial, it's likely a stutter
                 if disc.get("has_prolongation", False) or disc.get("is_partial", False):
                     filtered.append(disc)
                     continue
-
-                # Check if it's a common variation
-                ref_word = disc.get("reference", "").lower()
-                trans_word = disc.get("transcribed", "").lower()
-
-                if (
-                    ref_word in common_variations
-                    and trans_word in common_variations.get(ref_word, [])
-                ):
-                    # This is a common variation, not a true discrepancy
-                    continue
-
-                if (
-                    trans_word in common_variations
-                    and ref_word in common_variations.get(trans_word, [])
-                ):
-                    # This is a common variation, not a true discrepancy
-                    continue
-
-                # If similarity is very low, it might be a real substitution error
                 if disc.get("similarity", 1.0) < 0.4:
                     filtered.append(disc)
                     continue
-
-                # Otherwise, it might be a normal speech variation
                 continue
-
-            # For insertions, check if they're likely stutters or common variations
             if disc["type"] == "insertion":
                 if disc.get("has_prolongation", False) or disc.get("is_partial", False):
                     filtered.append(disc)
                     continue
-
-                # Check if it's a common filler word
-                if "transcribed" in disc:
-                    word = disc["transcribed"].lower()
-                    if word in ["um", "uh", "er", "ah", "like", "you know"]:
-                        # This is a filler, not a true discrepancy
-                        continue
-
-                    # Check if it's a common word that might be added in natural speech
-                    if word in [
-                        "the",
-                        "a",
-                        "an",
-                        "and",
-                        "or",
-                        "but",
-                        "so",
-                        "very",
-                        "quite",
-                        "just",
-                    ]:
-                        continue
-
-                # Otherwise include it
                 filtered.append(disc)
                 continue
-
-            # For omissions, check if they're common words that might be omitted
-            if disc["type"] == "omission":
-                if "reference" in disc:
-                    word = disc["reference"].lower()
-                    if word in [
-                        "the",
-                        "a",
-                        "an",
-                        "and",
-                        "or",
-                        "but",
-                        "so",
-                        "very",
-                        "quite",
-                        "just",
-                    ]:
-                        continue
-
-                filtered.append(disc)
-                continue
-
-            # Default: include the discrepancy
             filtered.append(disc)
-
         return filtered
 
-    def _align_texts(self, transcribed: list, reference: list) -> list:
-        """
-        Align transcribed text with reference text using dynamic programming.
-
-        Improved to handle stutters and repetitions better.
-
-        Returns:
-            list: List of tuples (trans_idx, ref_idx) representing alignment
-        """
-        # Create a matrix of edit distances
+    def _align_texts(self, transcribed: list, reference: list, language: str = "en") -> list:
         m, n = len(transcribed), len(reference)
         dp = [[0 for _ in range(n + 1)] for _ in range(m + 1)]
-
-        # Initialize first row and column
-        for i in range(m + 1):
-            dp[i][0] = i
-        for j in range(n + 1):
-            dp[0][j] = j
-
-        # Fill the matrix with improved scoring for stutters
+        for i in range(m + 1): dp[i][0] = i
+        for j in range(n + 1): dp[0][j] = j
         for i in range(1, m + 1):
             for j in range(1, n + 1):
-                # Check for exact match or equivalent words
                 if self._are_words_equivalent(transcribed[i - 1], reference[j - 1]):
                     dp[i][j] = dp[i - 1][j - 1]
                 else:
-                    # Check for potential stutter (repetition or partial word)
-                    is_potential_stutter = False
-
-                    # Check for repetition (current word same as previous)
-                    if i > 1 and transcribed[i - 1] == transcribed[i - 2]:
-                        is_potential_stutter = True
-
-                    # Check for partial word (hyphenated)
-                    if "-" in transcribed[i - 1]:
-                        is_potential_stutter = True
-
-                    # Check for prolongation (repeated characters)
-                    if re.search(r"([a-z])\1{2,}", transcribed[i - 1]):
-                        is_potential_stutter = True
-
-                    # If it's a potential stutter, favor deletion (keep reference word)
-                    if is_potential_stutter:
-                        dp[i][j] = min(
-                            dp[i - 1][j - 1] + 1,  # substitution
-                            dp[i - 1][j] + 0.5,  # deletion (lower cost for stutters)
-                            dp[i][j - 1] + 1,  # insertion
-                        )
-                    else:
-                        # Standard edit distance
-                        dp[i][j] = min(
-                            dp[i - 1][j - 1] + 1,  # substitution
-                            dp[i - 1][j] + 1,  # deletion
-                            dp[i][j - 1] + 1,  # insertion
-                        )
-
-        # Backtrack to find alignment
+                    cost = 0.5 if self._is_potential_stutter(transcribed[i - 1], language=language) else 1
+                    dp[i][j] = min(dp[i - 1][j - 1] + 1, dp[i - 1][j] + cost, dp[i][j - 1] + 1)
         alignment = []
         i, j = m, n
         while i > 0 or j > 0:
-            if (
-                i > 0
-                and j > 0
-                and self._are_words_equivalent(transcribed[i - 1], reference[j - 1])
-            ):
-                alignment.append((i - 1, j - 1))
-                i -= 1
-                j -= 1
+            if i > 0 and j > 0 and self._are_words_equivalent(transcribed[i - 1], reference[j - 1]):
+                alignment.append((i - 1, j - 1)); i -= 1; j -= 1
             elif i > 0 and j > 0 and dp[i][j] == dp[i - 1][j - 1] + 1:
-                alignment.append((i - 1, j - 1))  # substitution
-                i -= 1
-                j -= 1
-            elif i > 0 and dp[i][j] == dp[i - 1][j] + (
-                0.5 if self._is_potential_stutter(transcribed[i - 1]) else 1
-            ):
-                alignment.append((i - 1, None))  # deletion
-                i -= 1
+                alignment.append((i - 1, j - 1)); i -= 1; j -= 1
+            elif i > 0 and dp[i][j] == dp[i - 1][j] + (0.5 if self._is_potential_stutter(transcribed[i - 1], language=language) else 1):
+                alignment.append((i - 1, None)); i -= 1
             else:
-                alignment.append((None, j - 1))  # insertion
-                j -= 1
-
+                alignment.append((None, j - 1)); j -= 1
         return list(reversed(alignment))
 
-    def _is_potential_stutter(self, word: str) -> bool:
-        """Check if a word is potentially a stutter."""
-        # Check for repetition, partial word, or prolongation
-        if "-" in word:
-            return True
-
-        if re.search(r"([a-z])\1{2,}", word):
-            return True
-
+    def _is_potential_stutter(self, word: str, language: str = "en") -> bool:
+        if "-" in word: return True
+        if language == "en":
+            if re.search(r"([a-z])\1{2,}", word, re.IGNORECASE): return True
+        else:
+            # Devanagari repetitions (e.g. ssss)
+            if re.search(r"([\u0900-\u097F])\1{2,}", word): return True
         return False
 
     def _calculate_fluency_score(self, result, passage_comparison) -> tuple:
-        """
-        Calculate stutter fluency score and severity with enhanced accuracy.
-
-        Incorporates passage comparison results for more accurate scoring.
-        """
         try:
-            # Count total syllables (approximation)
-            total_syllables = max(1, len(result.text.split()))  # Avoid division by zero
-
-            # Count all stutter events
-            repetitions_count = len(result.repetitions)
-            prolongations_count = len(
-                [
-                    e
-                    for e in result.pronunciation_errors
-                    if "prolongation" in e.get("event_type", "")
-                ]
-            )
-            blocks_count = len([s for s in result.silences if s.get("is_block", False)])
-            fillers_count = len(result.fillers)
-
-            # Count discrepancies from reference passage
-            discrepancy_count = passage_comparison["discrepancy_count"]
-
-            # Calculate weights for different stutter types
-            repetition_weight = 1.0
-            prolongation_weight = 1.2
-            block_weight = 1.5
-            filler_weight = 0.5
-            discrepancy_weight = 1.5
-
-            # Calculate weighted stutter events
-            weighted_stutters = (
-                repetitions_count * repetition_weight
-                + prolongations_count * prolongation_weight
-                + blocks_count * block_weight
-                + fillers_count * filler_weight
-                + discrepancy_count * discrepancy_weight
-            )
-
-            # Compute %SS (Percentage of Syllables Stuttered)
+            total_syllables = max(1, len(result.text.split()))
+            weighted_stutters = (len(result.repetitions) * 1.0 +
+                                len(result.fillers) * 0.5 +
+                                len(result.pronunciation_errors) * 1.5 +
+                                passage_comparison["discrepancy_count"] * 1.5)
             percent_ss = min(100, (weighted_stutters / total_syllables) * 100)
+            fluency_score = 100 - int(percent_ss)
 
-            # Extract durations for severity calculation
-            all_events = (
-                result.repetitions
-                + [
-                    e
-                    for e in result.pronunciation_errors
-                    if "prolongation" in e.get("event_type", "")
-                ]
-                + [s for s in result.silences if s.get("is_block", False)]
-                + result.fillers
-            )
+            if fluency_score > 90: severity = "Fluent"
+            elif fluency_score > 75: severity = "Mild"
+            elif fluency_score > 50: severity = "Moderate"
+            else: severity = "Severe"
 
-            # Find longest stutter duration
-            longest_stutter = 0
-            if all_events:
-                try:
-                    longest_stutter = max(
-                        [self._get_event_duration(event) for event in all_events]
-                    )
-                except (ValueError, TypeError):
-                    longest_stutter = 0
-
-            # Calculate duration score
-            duration_score = self._get_duration_score(longest_stutter)
-
-            # Calculate frequency score
-            frequency_score = self._get_frequency_score(
-                weighted_stutters, total_syllables
-            )
-
-            # Calculate passage similarity penalty
-            similarity_penalty = self._get_similarity_penalty(
-                passage_comparison["spoken_word_count"]
-                / passage_comparison["reference_word_count"]
-            )
-
-            # Compute final fluency score (lower is better)
-            fluency_score = min(
-                100,
-                max(
-                    0,
-                    int(percent_ss)
-                    + duration_score
-                    + frequency_score
-                    + similarity_penalty,
-                ),
-            )
-
-            # Determine severity level
-            severity = self._get_severity_level(fluency_score)
-
-            return 100 - fluency_score, severity
-
-        except Exception as e:
-            logger.error(f"Error calculating fluency score: {e}")
-            # Return default values in case of error
+            return fluency_score, severity
+        except Exception:
             return 50, "Moderate"
 
-    def _get_event_duration(self, event):
-        """Safely extract duration from an event."""
-        if "duration" in event:
-            return event["duration"]
-        elif "start" in event and "end" in event:
-            return event["end"] - event["start"]
-        return 0
-
-    def _get_duration_score(self, duration) -> int:
-        """Assigns duration score based on the longest stuttering event."""
-        if duration < 0.3:
-            return 0
-        elif duration < 0.7:
-            return 2
-        elif duration < 1.5:
-            return 4
-        elif duration < 2.5:
-            return 6
-        elif duration < 4.0:
-            return 8
-        else:
-            return 10
-
-    def _get_frequency_score(self, stutter_count, total_syllables) -> int:
-        """Assigns frequency score based on stutter frequency."""
-        frequency = (stutter_count / total_syllables) * 100
-
-        if frequency < 1:
-            return 0
-        elif frequency < 2:
-            return 2
-        elif frequency < 5:
-            return 4
-        elif frequency < 8:
-            return 6
-        elif frequency < 12:
-            return 8
-        else:
-            return 10
-
-    def _get_similarity_penalty(self, similarity) -> int:
-        """
-        Calculate penalty based on similarity to reference passage.
-        Lower similarity = higher penalty
-        """
-        if similarity > 0.95:
-            return 0
-        elif similarity > 0.9:
-            return 1
-        elif similarity > 0.8:
-            return 2
-        elif similarity > 0.7:
-            return 4
-        elif similarity > 0.6:
-            return 6
-        else:
-            return 8
-
-    def _get_severity_level(self, score) -> str:
-        """Determines severity level based on enhanced scoring."""
-        if score <= 10:
-            return "Very Mild"
-        elif score <= 20:
-            return "Mild"
-        elif score <= 30:
-            return "Moderate"
-        elif score <= 40:
-            return "Severe"
-        else:
-            return "Very Severe"
-
     def _format_stutter_events(self, result) -> list:
-        """
-        Format all stutter events into a consistent structure for the API response.
-        """
         formatted_events = []
-
-        # Process repetitions
         for rep in result.repetitions:
-            formatted_events.append(
-                {
-                    "type": "repetition",
-                    "subtype": rep.get("repetition_type", "simple"),
-                    "start": rep.get("start", 0),
-                    "end": rep.get("end", 0),
-                    "duration": rep.get("end", 0) - rep.get("start", 0),
-                    "text": rep.get("word", ""),
-                    "count": rep.get("count", 1),
-                    "confidence": rep.get("confidence", 0.0),
-                }
-            )
-
-        # Process fillers
+            event_type = rep.get("type", "repetition")
+            formatted_events.append({
+                "type": event_type,
+                "subtype": rep.get("subtype", rep.get("repetition_type", "simple")),
+                "start": rep.get("start", 0),
+                "end": rep.get("end", 0),
+                "duration": rep.get("end", 0) - rep.get("start", 0),
+                "text": rep.get("word", rep.get("text", event_type)),
+                "count": rep.get("count", 1),
+                "confidence": rep.get("confidence", 0.0),
+                "severity": rep.get("severity", rep.get("confidence", 0.0)),
+            })
         for filler in result.fillers:
-            formatted_events.append(
-                {
-                    "type": "filler",
-                    "subtype": filler.get("filler_type", "hesitation"),
-                    "start": filler.get("start", 0),
-                    "end": filler.get("end", 0),
-                    "duration": filler.get("end", 0) - filler.get("start", 0),
-                    "text": filler.get("word", ""),
-                    "confidence": filler.get("confidence", 0.0),
-                }
-            )
-
-        # Process pronunciation errors (prolongations)
-        for error in result.pronunciation_errors:
-            if "prolongation" in error.get("event_type", ""):
-                formatted_events.append(
-                    {
-                        "type": "prolongation",
-                        "subtype": "sound_prolongation",
-                        "start": error.get("start", 0),
-                        "end": error.get("end", 0),
-                        "duration": error.get("end", 0) - error.get("start", 0),
-                        "text": error.get("word", ""),
-                        "confidence": error.get("confidence", 0.0),
-                    }
-                )
-
-        # Process silences (blocks)
-        for silence in result.silences:
-            if silence.get("is_block", False):  # Only include blocks
-                formatted_events.append(
-                    {
-                        "type": "block",
-                        "subtype": "silence",
-                        "start": silence.get("start", 0),
-                        "end": silence.get("end", 0),
-                        "duration": silence.get("duration", 0),
-                        "confidence": silence.get(
-                            "confidence", 0.9
-                        ),  # High confidence for silence detection
-                    }
-                )
-
+            formatted_events.append({
+                "type": "filler", "subtype": filler.get("filler_type", "hesitation"),
+                "start": filler.get("start", 0), "end": filler.get("end", 0),
+                "duration": filler.get("end", 0) - filler.get("start", 0),
+                "text": filler.get("word", "filler"), "confidence": filler.get("confidence", 0.0),
+                "severity": filler.get("confidence", 0.0),
+            })
+        for block in result.pronunciation_errors: # We stored blocks here
+            formatted_events.append({
+                "type": "block", "subtype": block.get("subtype", "signal_detected"),
+                "start": block.get("start", 0), "end": block.get("end", 0),
+                "duration": block.get("end", 0) - block.get("start", 0),
+                "text": "block", "confidence": block.get("confidence", 0.0),
+                "severity": block.get("severity", 0.0),
+            })
+        formatted_events.sort(key=lambda x: x["start"])
         return formatted_events
